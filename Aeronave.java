@@ -1,5 +1,5 @@
 import java.util.Scanner;
-
+ 
 public class Aeronave
 {
     private String destino;
