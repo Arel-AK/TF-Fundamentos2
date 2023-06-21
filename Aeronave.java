@@ -14,7 +14,7 @@ public class Aeronave
             }
         }
     }
-    public static void sell(String command, Assento  [][] seats) {
+    public void sell(String command) {
         System.out.println(command);
         String choice = command.substring(5); 
         System.out.println(choice);
@@ -61,9 +61,60 @@ public class Aeronave
                 next = column - 1;
             }
             if (!seats[line][next].getOcupado()) {
-                System.out.println("Deseja reservar o assento ao lado? (S/n)");
+                System.out.println("Deseja reservar o assento ao lado? (s/n)");
             }
         }
+    }
+    public void block(String command) {
+        System.out.println(command);
+        String choice = command.substring(5); 
+        System.out.println(choice);
+        
+        char letter = choice.charAt(0);
+        System.out.println(letter);
+        
+        int number = Integer.parseInt(choice.substring(1));        
+        System.out.println(number);
+
+        int line;
+        int column;
+        
+        switch(letter) {
+            case 'A' :
+            case 'a' :
+                        column = 0;
+                        break;
+            case 'B' :
+            case 'b' :
+                        column = 1;
+                        break;
+            case 'C' :
+            case 'c' :
+                        column = 2;
+                        break;
+            case 'D' :
+            case 'd' :
+                        column = 3;
+                        break;
+            default:
+                        column = -1;
+        }
+        
+        line = number - 1;
+
+         
+                 
+            int next;
+            if (column == 0 || column == 2) {
+                next = column + 1;
+            } else {
+                next = column - 1;
+            }
+            if (!seats[line][next].getOcupado()) {
+                //System.out.println("Deseja reservar o assento ao lado? (sim/nao)");
+                seats [line][next].setOcupado(true); 
+            }
+        
     }
     public void print() {
         System.out.printf("POA -> %s%n", destino);
@@ -102,9 +153,15 @@ public class Aeronave
             command = in.nextLine();
             if (command.startsWith("show"))
                 a.print();
-            //else if (command.startsWith("sell"))                
-                //sell(command, seats);
-            else
+            else if (command.startsWith("sell")){
+                 a.sell(command);
+                 System.out.println("Deseja bloquear o assento ao lado");
+                 String choice = in.nextLine();
+                 if(choice.equalsIgnoreCase("sim"))
+                 a.block(command);
+            }
+                    
+            else if (!command.startsWith("quit"))
                 System.out.println("Comando invalido!");
         } while (!command.startsWith("quit"));
     
