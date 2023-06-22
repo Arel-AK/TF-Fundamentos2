@@ -17,4 +17,12 @@ public class Assento
     {
         this.ocupado = ocupado;
     }
+    public boolean getBloqueado()
+    {
+        return bloqueado;
+    }
+    public void setBloqueado(boolean bloqueado)
+    {
+        this.bloqueado = bloqueado;
+    }
 }

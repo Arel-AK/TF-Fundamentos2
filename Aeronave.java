@@ -1,5 +1,5 @@
 import java.util.Scanner;
- 
+
 public class Aeronave
 {
     private String destino;
@@ -14,46 +14,48 @@ public class Aeronave
             }
         }
     }
+
     public void sell(String command) {
-        System.out.println(command);
+        //System.out.println(command);
         String choice = command.substring(5); 
-        System.out.println(choice);
-        
+        //System.out.println(choice);
+
         char letter = choice.charAt(0);
-        System.out.println(letter);
-        
+        //System.out.println(letter);
+        System.out.printf("escolheu %s%n", choice);
+
         int number = Integer.parseInt(choice.substring(1));        
-        System.out.println(number);
+        //System.out.println(number);
 
         int line;
         int column;
-        
+
         switch(letter) {
             case 'A' :
             case 'a' :
-                        column = 0;
-                        break;
+                column = 0;
+                break;
             case 'B' :
             case 'b' :
-                        column = 1;
-                        break;
+                column = 1;
+                break;
             case 'C' :
             case 'c' :
-                        column = 2;
-                        break;
+                column = 2;
+                break;
             case 'D' :
             case 'd' :
-                        column = 3;
-                        break;
+                column = 3;
+                break;
             default:
-                        column = -1;
+                column = -1;
         }
-        
+
         line = number - 1;
-        if (seats[line][column].getOcupado())
+        if (seats[line][column].getOcupado() || seats[line][column].getBloqueado())
             System.out.println("Assento OCUPADO!");
         else {
-            seats [line][column].setOcupado(true);      
+            seats [line][column].setOcupado(true);
             int next;
             if (column == 0 || column == 2) {
                 next = column + 1;
@@ -61,65 +63,70 @@ public class Aeronave
                 next = column - 1;
             }
             if (!seats[line][next].getOcupado()) {
-                System.out.println("Deseja reservar o assento ao lado? (s/n)");
+                System.out.println("Deseja bloquear o assento ao lado? (sim/nao)");
+            }
+            else{
+                System.out.println("O assento ao lado nao pode ser bloquado"); 
+                System.out.println("Leva bagagem?");
             }
         }
     }
+
     public void block(String command) {
-        System.out.println(command);
+        //System.out.println(command);
         String choice = command.substring(5); 
-        System.out.println(choice);
-        
+        //System.out.println(choice);
+
         char letter = choice.charAt(0);
-        System.out.println(letter);
+        //System.out.println(letter);
+        
         
         int number = Integer.parseInt(choice.substring(1));        
-        System.out.println(number);
+        //System.out.println(number);
 
         int line;
         int column;
-        
+
         switch(letter) {
             case 'A' :
             case 'a' :
-                        column = 0;
-                        break;
+                column = 0;
+                break;
             case 'B' :
             case 'b' :
-                        column = 1;
-                        break;
+                column = 1;
+                break;
             case 'C' :
             case 'c' :
-                        column = 2;
-                        break;
+                column = 2;
+                break;
             case 'D' :
             case 'd' :
-                        column = 3;
-                        break;
+                column = 3;
+                break;
             default:
-                        column = -1;
+                column = -1;
         }
-        
+
         line = number - 1;
 
-         
                  
-            int next;
-            if (column == 0 || column == 2) {
-                next = column + 1;
-            } else {
-                next = column - 1;
-            }
-            if (!seats[line][next].getOcupado()) {
-                //System.out.println("Deseja reservar o assento ao lado? (sim/nao)");
-                seats [line][next].setOcupado(true); 
-            }
-        
+        int next;
+        if (column == 0 || column == 2) {
+            next = column + 1;
+        } else {
+            next = column - 1;
+        }
+        if (!seats[line][next].getOcupado()) {
+            seats [line][next].setBloqueado(true); 
+        }
+
     }
+
     public void print() {
         System.out.printf("POA -> %s%n", destino);
         System.out.println("03/06/2023 6h TAM 3434\n");
-        
+
         System.out.println("    A  B     C  D");      
         // percorre cada linha
         for (int i = 0; i < seats.length; i++) {
@@ -128,6 +135,8 @@ public class Aeronave
             for (int j = 0; j < seats[i].length; j++) {            
                 if (seats[i][j].getOcupado())
                     System.out.print("[0]");
+                else if (seats[i][j].getBloqueado())
+                    System.out.print("[X]");
                 else
                     System.out.print("[ ]");
                 if (j == 1) {
@@ -140,13 +149,14 @@ public class Aeronave
             }
         }
         System.out.println("    A  B     C  D");      
-        
+
     }
+
     public static void main(String[] args) throws Exception {
         Scanner in = new Scanner(System.in);
         Aeronave a = new Aeronave("RJ");
         //seats[2][2].setOcupado(true); // simula uma venda anterior
-        
+
         System.out.println("Venda de passagens");
         String command;
         do {
@@ -154,16 +164,28 @@ public class Aeronave
             if (command.startsWith("show"))
                 a.print();
             else if (command.startsWith("sell")){
-                 a.sell(command);
-                 System.out.println("Deseja bloquear o assento ao lado");
-                 String choice = in.nextLine();
-                 if(choice.equalsIgnoreCase("sim"))
-                 a.block(command);
+                a.sell(command);
+                String choice = in.nextLine();
+                if(choice.equalsIgnoreCase("sim")){
+                    a.block(command);
+                    System.out.println("Assento ao lado foi bloquado");
+                    System.out.println("Leva bagagem?");
+                }
+                else if(choice.equalsIgnoreCase("nao")){
+                    System.out.println("Assento ao lado não foi bloqueado");
+                    System.out.println("Leva bagagem?");
+                } 
+                choice = in.nextLine();
+                if(choice.equalsIgnoreCase("sim")){
+                    System.out.printf("O custo por bagagem é R$50,00%n%n");//preço = preço + 50;
+                    System.out.print("Nome do cliente: ");
+                }
+                else if(choice.equalsIgnoreCase("nao")){
+                    System.out.print("Nome do cliente: ");
+                }
             }
-                    
             else if (!command.startsWith("quit"))
                 System.out.println("Comando invalido!");
         } while (!command.startsWith("quit"));
-    
     }
 }
