@@ -54,7 +54,7 @@ public class Aeronave
         line = number - 1;
         if (seats[line][column].getOcupado() || seats[line][column].getBloqueado())
             System.out.println("Assento OCUPADO!");
-        else {
+        else{
             seats [line][column].setOcupado(true);
             int next;
             if (column == 0 || column == 2) {
@@ -63,12 +63,13 @@ public class Aeronave
                 next = column - 1;
             }
             if (!seats[line][next].getOcupado()) {
-                System.out.println("Deseja bloquear o assento ao lado? (sim/nao)");
+                System.out.println("Deseja bloquear o assento ao lado por mais R$100,00? (sim/nao)");
             }
             else{
                 System.out.println("O assento ao lado nao pode ser bloquado"); 
                 System.out.println("Leva bagagem?");
             }
+
         }
     }
 
@@ -165,9 +166,11 @@ public class Aeronave
                 a.print();
             else if (command.startsWith("sell")){
                 a.sell(command);
+                Comprador c = new Comprador();
                 String choice = in.nextLine();
                 if(choice.equalsIgnoreCase("sim")){
                     a.block(command);
+                    Assento.preço = Assento.preço + 100;
                     System.out.println("Assento ao lado foi bloquado");
                     System.out.println("Leva bagagem?");
                 }
@@ -177,15 +180,34 @@ public class Aeronave
                 } 
                 choice = in.nextLine();
                 if(choice.equalsIgnoreCase("sim")){
-                    System.out.printf("O custo por bagagem é R$50,00%n%n");//preço = preço + 50;
-                    System.out.print("Nome do cliente: ");
+                    System.out.printf("O custo por bagagem é R$50,00%n%n");
+                    Assento.preço = Assento.preço + 50;
                 }
                 else if(choice.equalsIgnoreCase("nao")){
-                    System.out.print("Nome do cliente: ");
                 }
+                System.out.print("digite 'nome' para receber nome ");
+                choice = in.nextLine();
+                if(choice.equalsIgnoreCase("nome")){
+                    c.getNome();
+                    System.out.println("O nome do comprador é: " + Comprador.nome);
+                }
+                System.out.print("digite 'cpf' para receber cpf");
+                choice = in.nextLine();
+                if(choice.equalsIgnoreCase("cpf")){
+                    c.getCpf();
+                    System.out.println("O cpf do comprador é: " + Comprador.cpf);
+                }
+                System.out.print("digite 'total' para receber total da compra ");
+                choice = in.nextLine();
+                if(choice.equalsIgnoreCase("total")){
+                    c.totalCompra();
+                    System.out.println("O total da compra é: " + Assento.preço);
+                }
+                
             }
             else if (!command.startsWith("quit"))
                 System.out.println("Comando invalido!");
         } while (!command.startsWith("quit"));
+        
     }
 }
