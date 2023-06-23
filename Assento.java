@@ -1,5 +1,5 @@
 public class Assento
-{ 
+{
     public static double preço = 150.00;
     private boolean ocupado;
     private boolean bloqueado;

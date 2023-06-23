@@ -9,13 +9,15 @@ public class Comprador {
     }
 
     public String getNome() {
-        System.out.println("Nome do Cliente:");
+        System.out.print("Informe o nome");
+        System.out.println();
         nome = in.next();
         return nome;
     }
 
     public String getCpf() {
-        System.out.println("CPF: ");
+        System.out.print("Informe o CPF");
+        System.out.println();
         cpf = in.next();
         return cpf;
     }
