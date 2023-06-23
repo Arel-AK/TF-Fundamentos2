@@ -1,4 +1,5 @@
-public class Assento
+import java.io.Serializable;
+public class Assento implements Serializable
 {
     public static double preço = 150.00;
     private boolean ocupado;

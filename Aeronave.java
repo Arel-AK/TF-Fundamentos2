@@ -129,17 +129,20 @@ public class Aeronave {
         System.out.println("03/06/2023 6h TAM 3434\n");
 
         System.out.println("    A  B     C  D");
-        // percorre cada linha
+
+        // Percorre cada linha
         for (int i = 0; i < seats.length; i++) {
-            // mostra uma linha matriz
+            // Mostra uma linha da matriz
             System.out.printf("%2d ", i + 1);
             for (int j = 0; j < seats[i].length; j++) {
-                if (seats[i][j].getOcupado())
-                    System.out.print("[0]");
-                else if (seats[i][j].getBloqueado())
+                Assento assento = seats[i][j];
+                if (assento.getOcupado()) {
                     System.out.print("[X]");
-                else
+                } else if (assento.getBloqueado()) {
+                    System.out.print("[B]");
+                } else {
                     System.out.print("[ ]");
+                }
                 if (j == 1) {
                     System.out.print("   ");
                 }
@@ -149,14 +152,22 @@ public class Aeronave {
                 System.out.println();
             }
         }
+
         System.out.println("    A  B     C  D");
     }
-
 
     public Assento[][] getSeats() {
         return seats;
     }
 
     public void saveSeatsToFile() {
+    }
+
+    public String getDestino() {
+        return destino;
+    }
+
+    public void setSeats(Assento[][] seats) {
+        this.seats = seats;
     }
 }

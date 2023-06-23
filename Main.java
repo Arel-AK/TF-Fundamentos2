@@ -4,138 +4,151 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) throws Exception {
         Scanner in = new Scanner(System.in);
-        Aeronave a = new Aeronave("RJ");
-        loadSeatsFromFile(a);
+        Aeronave a1 = new Aeronave("RJ");
+        Aeronave a2 = new Aeronave("SP");
+        Aeronave a3 = new Aeronave("BH");
+        loadSeatsFromFile(a1);
+        loadSeatsFromFile(a2);
+        loadSeatsFromFile(a3);
+
+        System.out.println("Selecione a aeronave:");
+        System.out.println("1. Aeronave com destino ao Rio de Janeiro (RJ)");
+        System.out.println("2. Aeronave com destino a São Paulo (SP)");
+        System.out.println("3. Aeronave com destino a Belo Horizonte (BH)");
+
+        int option = in.nextInt();
+        in.nextLine(); // Limpar o buffer de entrada
+
+        Aeronave selectedAeronave;
+        switch (option) {
+            case 1:
+                selectedAeronave = a1;
+                break;
+            case 2:
+                selectedAeronave = a2;
+                break;
+            case 3:
+                selectedAeronave = a3;
+                break;
+            default:
+                System.out.println("Opção inválida. Encerrando o programa.");
+                return;
+        }
 
         System.out.println("Venda de passagens");
         String command;
         do {
             command = in.nextLine();
             if (command.startsWith("show"))
-                a.print();
-            else if (command.startsWith("sell")){
-                a.sell(command);
+                selectedAeronave.print();
+            else if (command.startsWith("sell")) {
+                selectedAeronave.sell(command);
                 Comprador c = new Comprador();
                 String choice = in.nextLine();
-                if(choice.equalsIgnoreCase("sim")){
-                    a.block(command);
+                if (choice.equalsIgnoreCase("sim")) {
+                    selectedAeronave.block(command);
                     Assento.preço = Assento.preço + 100;
                     System.out.println("Assento ao lado foi bloqueado");
                     System.out.println("Leva bagagem?");
-                }
-                else if(choice.equalsIgnoreCase("nao")){
+                } else if (choice.equalsIgnoreCase("nao")) {
                     System.out.println("Assento ao lado não foi bloqueado");
                     System.out.println("Leva bagagem?");
                 }
                 choice = in.nextLine();
-                if(choice.equalsIgnoreCase("sim")){
+                if (choice.equalsIgnoreCase("sim")) {
                     System.out.printf("O custo por bagagem é R$50,00%n%n");
                     Assento.preço = Assento.preço + 50;
+                } else if (choice.equalsIgnoreCase("nao")) {
                 }
-                else if(choice.equalsIgnoreCase("nao")){
-                }
-                System.out.print("digite 'nome' para receber nome ");
+                System.out.print("Digite 'nome' para receber o nome: ");
                 choice = in.nextLine();
-                if(choice.equalsIgnoreCase("nome")){
+                if (choice.equalsIgnoreCase("nome")) {
                     c.getNome();
-                    System.out.println("O nome do comprador é: " + Comprador.nome);
+                    System.out.println("O nome do comprador é: " + c.getNome());
                     System.out.println();
                 }
-                System.out.print("digite 'cpf' para receber cpf ");
+                System.out.print("Digite 'cpf' para receber o CPF: ");
                 choice = in.nextLine();
-                if(choice.equalsIgnoreCase("cpf")){
+                if (choice.equalsIgnoreCase("cpf")) {
                     c.getCpf();
-                    System.out.println("O cpf do comprador é: " + Comprador.cpf);
+                    System.out.println("O CPF do comprador é: " + c.getCpf());
                     System.out.println();
                 }
-                System.out.print("digite 'total' para receber total da compra ");
+                System.out.print("Digite 'total' para receber o total da compra: ");
                 choice = in.nextLine();
                 if(choice.equalsIgnoreCase("total")){
                     c.totalCompra();
                     System.out.println("O total da compra é: R$" + Assento.preço);
                     System.out.println();
-                    saveBuyerInformationToFile(c);
+                    saveBuyerInformationToFile(c, selectedAeronave);
                 }
-                a.saveSeatsToFile();
+                selectedAeronave.saveSeatsToFile();
             }
             else if (command.startsWith("listCompradores")) {
-                showBuyerInformation();
+                showBuyerInformation(selectedAeronave);
             }
             else if (command.startsWith("emptyAeronave")) {
-                emptyAeronave(a);
+                emptyAeronave(selectedAeronave);
             }
             else if (!command.startsWith("quit"))
                 System.out.println("Comando inválido!");
-        } while (!command.startsWith("quit"));
 
-        saveSeatsToFile(a);
+        } while (!command.equalsIgnoreCase("quit"));
+
+        saveSeatsToFile(a1);
+        saveSeatsToFile(a2);
+        saveSeatsToFile(a3);
+
+        System.out.println("Programa encerrado.");
     }
 
-    private static void loadSeatsFromFile(Aeronave aeronave) {
+    public static void loadSeatsFromFile(Aeronave aeronave) {
         try {
-            File file = new File("assentos.txt");
-            Scanner scanner = new Scanner(file);
-
-            for (int i = 0; i < aeronave.getSeats().length; i++) {
-                String line = scanner.nextLine();
-                char[] data = line.toCharArray();
-
-                for (int j = 0; j < aeronave.getSeats()[i].length; j++) {
-                    int dataIndex = j * 2; // Índice correto no array de dados
-
-                    aeronave.getSeats()[i][j].setOcupado(data[dataIndex] == '1');
-
-                    // Verifica se o assento está bloqueado
-                    if (data[dataIndex + 1] == '1') {
-                        aeronave.getSeats()[i][j].setBloqueado(true);
-                    }
-                }
+            File file = new File("assentos_" + aeronave.getDestino().toLowerCase() + ".txt");
+            if (file.exists()) {
+                FileInputStream fis = new FileInputStream(file);
+                ObjectInputStream ois = new ObjectInputStream(fis);
+                Assento[][] seats = (Assento[][]) ois.readObject();
+                ois.close();
+                fis.close();
+                aeronave.setSeats(seats);
+                System.out.println("Dados dos assentos carregados do arquivo.");
+            } else {
+                System.out.println("Arquivo de dados dos assentos não encontrado. Assentos vazios criados.");
             }
-
-            scanner.close();
-        } catch (IOException e) {
-            System.out.println("Erro ao ler o arquivo de assentos.");
+        } catch (Exception e) {
+            System.out.println("Erro ao carregar dados dos assentos: " + e.getMessage());
         }
     }
 
-    private static void saveSeatsToFile(Aeronave aeronave) {
+    public static void saveSeatsToFile(Aeronave aeronave) {
         try {
-            File file = new File("assentos.txt");
-            PrintWriter writer = new PrintWriter(file);
-
-            for (int i = 0; i < aeronave.getSeats().length; i++) {
-                for (int j = 0; j < aeronave.getSeats()[i].length; j++) {
-                    Assento assento = aeronave.getSeats()[i][j];
-                    char seatData = assento.getOcupado() ? '1' : '0';
-                    char blockedData = assento.getBloqueado() ? '1' : '0';
-                    writer.print(seatData);
-                    writer.print(blockedData);
-                }
-                writer.println();
-            }
-
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("Erro ao gravar o arquivo de assentos.");
+            File file = new File("assentos_" + aeronave.getDestino().toLowerCase() + ".txt");
+            FileOutputStream fos = new FileOutputStream(file);
+            ObjectOutputStream oos = new ObjectOutputStream(fos);
+            oos.writeObject(aeronave.getSeats());
+            oos.close();
+            fos.close();
+            System.out.println("Dados dos assentos salvos em arquivo.");
+        } catch (Exception e) {
+            System.out.println("Erro ao salvar dados dos assentos: " + e.getMessage());
         }
     }
 
 
-
-
-    private static void saveBuyerInformationToFile(Comprador c) throws IOException {
-        File file = new File("compradores.txt");
+    private static void saveBuyerInformationToFile(Comprador c, Aeronave aeronave) throws IOException {
+        File file = new File(aeronave.getDestino() + "_compradores.txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
-        String nome = Comprador.nome;
-        String cpf = Comprador.cpf;
+        String nome = c.getNome();
+        String cpf = c.getCpf();
         double totalCompra = Assento.preço;
         writer.write(nome + "," + cpf + "," + totalCompra);
         writer.newLine();
         writer.close();
     }
 
-    private static void showBuyerInformation() throws IOException {
-        File file = new File("compradores.txt");
+    private static void showBuyerInformation(Aeronave aeronave) throws IOException {
+        File file = new File(aeronave.getDestino() + "_compradores.txt");
         if (file.exists()) {
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
@@ -156,15 +169,15 @@ public class Main {
         }
     }
 
-    private static void emptyAeronave(Aeronave a) {
-        for (int i = 0; i < a.getSeats().length; i++) {
-            for (int j = 0; j < a.getSeats()[i].length; j++) {
-                a.getSeats()[i][j].setOcupado(false);
-                a.getSeats()[i][j].setBloqueado(false);
+    private static void emptyAeronave(Aeronave selectedAeronave) {
+        for (int i = 0; i < selectedAeronave.getSeats().length; i++) {
+            for (int j = 0; j < selectedAeronave.getSeats()[i].length; j++) {
+                selectedAeronave.getSeats()[i][j].setOcupado(false);
+                selectedAeronave.getSeats()[i][j].setBloqueado(false);
             }
         }
-        File seatsFile = new File("assentos.txt");
-        File buyersFile = new File("compradores.txt");
+        File seatsFile = new File(selectedAeronave.getDestino() + "_seats.txt");
+        File buyersFile = new File(selectedAeronave.getDestino() + "_compradores.txt");
         if (seatsFile.exists()) {
             seatsFile.delete();
         }
@@ -174,4 +187,3 @@ public class Main {
         System.out.println("Aeronave esvaziada. Todas as informações foram removidas.");
     }
 }
-
