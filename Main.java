@@ -1,12 +1,29 @@
 import java.io.*;
 import java.util.Scanner;
 
+/**
+ *@author Ariel Villarroel
+ *@author Bernardo Fioreze
+ *@author Gustavo Munoz
+ *@version 1.0
+ *Classe Main
+ */
 public class Main {
+    
+    /**
+     * Método principal, que inicia a execução do programa de venda de passagens de uma aeronave.
+     * Salva mudanças feitas para o arquivo de texto da aeronave escolhida
+     * 
+     * @param args Os argumentos de linha de comando (não são utilizados neste programa)
+     * @throws Exception Exceção lançada em caso de erros durante a execução do programa
+     */
     public static void main(String[] args) throws Exception {
+        // seleção de aeronave a ser manipulada
         Scanner in = new Scanner(System.in);
         Aeronave a1 = new Aeronave("RJ");
         Aeronave a2 = new Aeronave("SP");
         Aeronave a3 = new Aeronave("BH");
+        // carrega os dados das aeronaves
         loadSeatsFromFile(a1);
         loadSeatsFromFile(a2);
         loadSeatsFromFile(a3);
@@ -37,6 +54,7 @@ public class Main {
 
         System.out.println("Venda de passagens");
         String command;
+        // todo o processo de venda da passagem e comandos disponiveis estao a seguir
         do {
             command = in.nextLine();
             if (command.startsWith("show"))
@@ -63,14 +81,12 @@ public class Main {
                 System.out.print("Digite 'nome' para receber o nome: ");
                 choice = in.nextLine();
                 if (choice.equalsIgnoreCase("nome")) {
-                    c.getNome();
                     System.out.println("O nome do comprador é: " + c.getNome());
                     System.out.println();
                 }
-                System.out.print("Digite 'cpf' para receber o CPF: ");
+                System.out.print("Digite 'cpf' para receber o cpf: ");
                 choice = in.nextLine();
                 if (choice.equalsIgnoreCase("cpf")) {
-                    c.getCpf();
                     System.out.println("O CPF do comprador é: " + c.getCpf());
                     System.out.println();
                 }
@@ -94,14 +110,20 @@ public class Main {
                 System.out.println("Comando inválido!");
 
         } while (!command.equalsIgnoreCase("quit"));
-
+        // salvar mudanças feitas as aeronaves após o quit
         saveSeatsToFile(a1);
         saveSeatsToFile(a2);
         saveSeatsToFile(a3);
 
         System.out.println("Programa encerrado.");
     }
-
+    
+    /**
+     * 
+     * Carrega do disco todos os dados dos assentos (ocupado/bloqueado) para o programa
+     * O arquivo certo é escolhido puxando com o getDestino() a tag certa para preencher o .txt
+     *
+     */
     public static void loadSeatsFromFile(Aeronave aeronave) {
         try {
             File file = new File("assentos_" + aeronave.getDestino().toLowerCase() + ".txt");
@@ -120,7 +142,13 @@ public class Main {
             System.out.println("Erro ao carregar dados dos assentos: " + e.getMessage());
         }
     }
-
+    
+    /**
+     * 
+     * Salva no disco todos os dados dos assentos (ocupado/bloqueado) para o programa
+     * O arquivo certo é escolhido puxando com o getDestino() a tag certa para preencher o .txt
+     *
+     */
     public static void saveSeatsToFile(Aeronave aeronave) {
         try {
             File file = new File("assentos_" + aeronave.getDestino().toLowerCase() + ".txt");
@@ -135,7 +163,12 @@ public class Main {
         }
     }
 
-
+    /**
+     * 
+     * Salva no disco todos os dados dos compradores (nome, cpf e total da compra) para o programa
+     * O arquivo certo é escolhido puxando com o getDestino() a tag certa para preencher o .txt
+     *
+     */
     private static void saveBuyerInformationToFile(Comprador c, Aeronave aeronave) throws IOException {
         File file = new File(aeronave.getDestino() + "_compradores.txt");
         BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
@@ -146,7 +179,13 @@ public class Main {
         writer.newLine();
         writer.close();
     }
-
+    
+    /**
+     * 
+     * Puxa do disco todos os dados dos compradores (nome, cpf e total da compra) para o programa
+     * O arquivo certo é escolhido puxando com o getDestino() a tag certa para preencher o .txt
+     * As informações são exibidas caso o comando "listCompradores" seja usado
+     */
     private static void showBuyerInformation(Aeronave aeronave) throws IOException {
         File file = new File(aeronave.getDestino() + "_compradores.txt");
         if (file.exists()) {
@@ -168,7 +207,16 @@ public class Main {
             System.out.println("Nenhum comprador registrado.");
         }
     }
-
+    
+    /**
+     * 
+     * Puxa do disco todos os dados dos compradores (nome, cpf e total da compra) 
+     * Puxa do disco todos os dados dos assentos (ocupado/bloqueado)
+     * Localiza o arquivo certo para cada um deles 
+     * Ao usar o "emptyAeronave" ativa-se o .delete para remover todas as informações da aeronave escolhida
+     * O arquivo certo é escolhido puxando com o getDestino() a tag certa para preencher o .txt
+     * 
+     */
     private static void emptyAeronave(Aeronave selectedAeronave) {
         for (int i = 0; i < selectedAeronave.getSeats().length; i++) {
             for (int j = 0; j < selectedAeronave.getSeats()[i].length; j++) {
